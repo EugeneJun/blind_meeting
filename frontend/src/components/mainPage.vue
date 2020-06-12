@@ -45,28 +45,28 @@ export default {
     }
   },
   methods: {
-    get_random_img: function () {
+    get_random_img: async function () {
       let idx = Math.floor(Math.random() * Math.floor(this.images.length)) - 1;
       console.log("11:", this.images[idx]);
       return this.images.splice(idx, 1);
     },
-    select_left: function () {
+    select_left: async function () {
       this.seleted_idol.push(this.left);
       if(this.images.length === 0){
         this.images = this.seleted_idol;
         this.seleted_idol = [];
       }
-      this.left = this.get_random_img();
-      this.right = this.get_random_img();
+      this.left = await this.get_random_img();
+      this.right = await this.get_random_img();
     },
-    select_right: function () {
+    select_right: async function () {
       this.seleted_idol.push(this.right);
       if(this.images.length === 0){
         this.images = this.seleted_idol;
         this.seleted_idol = [];
       }
-      this.left = this.get_random_img();
-      this.right = this.get_random_img();
+      this.left = await this.get_random_img();
+      this.right = await this.get_random_img();
     }
   }
 }
