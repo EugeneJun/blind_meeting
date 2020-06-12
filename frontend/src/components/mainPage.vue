@@ -33,8 +33,8 @@ export default {
     // `this` points to the vm instance
     let res = await axios.post('http://49.247.128.56:3000/get_imgs_list');
     this.images = res.data.imgs.slice(1, res.data.imgs.length);
-    this.right = this.get_random_img();
-    this.left = this.get_random_img();
+    this.right = await this.get_random_img();
+    this.left = await this.get_random_img();
   },
   sockets: {
     connect: function () {
