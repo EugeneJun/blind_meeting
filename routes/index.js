@@ -4,7 +4,7 @@ const fs = require('fs');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+  res.render('/frontend/dist/index');
 });
 
 router.post('/get_imgs_list', async function(req, res, next) {
