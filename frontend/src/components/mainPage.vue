@@ -46,7 +46,7 @@ export default {
   },
   methods: {
     get_random_img: async function () {
-      let idx = Math.floor(Math.random() * Math.floor(this.images.length)) - 1;
+      let idx = Math.floor(Math.random() * 100) % this.images.length;
       console.log("11:", this.images[idx]);
       return this.images.splice(idx, 1);
     },
