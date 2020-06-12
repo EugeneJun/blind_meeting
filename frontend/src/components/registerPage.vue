@@ -52,7 +52,7 @@ export default {
   methods: {
     register: async function () {
       if (this.password === this.passwordCheck) {
-        let res = await axios.post('http://49.247.128.56/users/register', { id: this.id, pw: this.password })
+        let res = await axios.post('http://49.247.128.56:3000/users/register', { id: this.id, pw: this.password })
         alert(res.data.msg);
         if(res.data.ok){
           await this.$router.push('/login');
