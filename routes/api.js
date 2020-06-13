@@ -3,7 +3,7 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const fs = require('fs');
 
-const DB = mongoose.createConnection('mongodb://localhost:27017/meeting', {useNewUrlParser: true, useUnifiedTopology: true });
+const DB = mongoose.createConnection('mongodb://127.0.0.1:27017/meeting', {useNewUrlParser: true, useUnifiedTopology: true });
 /* GET users listing. */
 router.post('/register', async function(req, res, next) {
   let exist_user = await DB.collection('users').findOne({id: req.body.id});
