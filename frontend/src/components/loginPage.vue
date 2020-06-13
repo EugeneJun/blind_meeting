@@ -48,7 +48,7 @@ export default {
   },
   methods: {
     login: async function () {
-      let res = await axios.post('http://49.247.128.56:3000/users/login', { id: this.id, pw: this.password });
+      let res = await axios.post('/api/login', { id: this.id, pw: this.password });
       if(res.data.ok) {
         alert(res.data.msg);
         await this.$router.push('/mainPage');

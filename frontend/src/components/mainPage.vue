@@ -31,7 +31,7 @@ export default {
   },
   created: async function () {
     // `this` points to the vm instance
-    let res = await axios.post('http://49.247.128.56:3000/get_imgs_list');
+    let res = await axios.post('/api/get_imgs_list');
     this.images = res.data.imgs;
     this.right = await this.get_random_img();
     this.left = await this.get_random_img();

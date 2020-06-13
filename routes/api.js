@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
+const fs = require('fs');
 
 const DB = mongoose.createConnection('mongodb://49.247.128.56:27017/meeting', {useNewUrlParser: true, useUnifiedTopology: true });
 /* GET users listing. */
@@ -22,6 +23,11 @@ router.post('/login', async function(req, res, next) {
   } else{
     res.send({ok: 0, msg: "로그인 실패.. 아이디나 비밀번호가 잘못되었습니다."});
   }
+});
+
+router.post('/get_imgs_list', async function(req, res, next) {
+  let imgs = await fs.readdirSync('./public/images/');
+  res.send({imgs});
 });
 
 module.exports = router;
