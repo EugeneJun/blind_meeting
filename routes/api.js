@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const mongoose = require('mongoose');
+const faceapi = require('../utils/faceapi');
 const fs = require('fs');
+const DB = require('../db/meeting').DB;
 
-const DB = mongoose.createConnection('mongodb://49.247.128.56:27017/meeting', {useNewUrlParser: true, useUnifiedTopology: true });
+faceapi.init();
 /* GET users listing. */
 router.post('/register', async function(req, res, next) {
   let exist_user = await DB.collection('users').findOne({id: req.body.id});
@@ -16,18 +17,55 @@ router.post('/register', async function(req, res, next) {
 });
 
 router.post('/login', async function(req, res, next) {
-  console.log(req);
   let exist_user = await DB.collection('users').findOne({id: req.body.id, pw: req.body.pw});
   if(exist_user){
+    req.session.user = {
+      id: req.body.id,
+      pw: req.body.pw,
+      authorized: true
+    };
     res.send({ok: 1, msg: "로그인 성공!"});
   } else{
     res.send({ok: 0, msg: "로그인 실패.. 아이디나 비밀번호가 잘못되었습니다."});
   }
 });
 
+router.post('/get_id', async function(req, res, next) {
+  if(req.session.user){
+    res.send({ok: 1, id: req.session.user.id});
+  } else{
+    res.send({ok: 0, msg: "로그인을 해주십시오!"});
+  }
+});
+
 router.post('/get_imgs_list', async function(req, res, next) {
-  let imgs = await fs.readdirSync('./public/images/');
+  let imgs = await fs.readdirSync('./public/images/idol/');
   res.send({imgs});
+});
+
+router.post('/insert_winner', async function(req, res) {
+  let exist_user = await DB.collection('users').findOne({id: req.session.user.id});
+  let winners = [req.body.winner];
+  if(exist_user.winners) {
+    winners = winners.concat(exist_user.winners);
+  }
+  DB.collection('users').updateOne({_id: exist_user._id}, {$set: {winners}});
+});
+
+router.post('/get_similar_person', async function(req, res) {
+  let exist_user = await DB.collection('similar').findOne({name: req.body.winner});
+  let similar_people = exist_user.similar_people;
+  if(similar_people && similar_people[0]) {
+    res.send({ok: 1, person: similar_people[Math.floor(Math.random() * 1000) % similar_people.length]});
+  }
+  else {
+    res.send({ok: 0, msg: "죄송합니다.. 닮은 사람이 존재하지 않습니다."});
+  }
+});
+
+router.post('/get_winners_list', async function(req, res) {
+  let exist_user = await DB.collection('users').findOne({id: req.session.user.id});
+  res.send({winners_list: exist_user.winners})
 });
 
 module.exports = router;

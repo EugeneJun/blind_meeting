@@ -1,0 +1,6 @@
+const mongoose = require('mongoose');
+const DB = mongoose.createConnection('mongodb://49.247.128.56:27017/meeting', {useNewUrlParser: true, useUnifiedTopology: true });
+
+module.exports = {
+  DB
+}

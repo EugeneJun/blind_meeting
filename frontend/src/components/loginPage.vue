@@ -71,7 +71,6 @@ export default {
   }
   .btn {
     margin-top: 10%;
-    float: center;
   }
   #app {
     font-family: Avenir, Helvetica, Arial, sans-serif;
