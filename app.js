@@ -15,6 +15,10 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+let bodyParser = require('body-parser');
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
+
 app.use(logger('dev'));
 app.use(cors());
 app.use(express.json());
