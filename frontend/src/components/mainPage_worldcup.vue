@@ -36,7 +36,7 @@
         <h3>{{ this.modal_idol.split('.')[0] }}</h3>
         <img class="person" v-bind:src="'./images/people/' + this.modal_idol" />
       </div>
-      <b-button class="mt-3" variant="success" block @click="$bvModal.hide('bv-modal-example')">받을래요!</b-button>
+      <b-button class="mt-3" variant="success" block @click="insert_chatList(); $bvModal.hide('bv-modal-example')">받을래요!</b-button>
       <b-button class="mt-3" block @click="$bvModal.hide('bv-modal-example')">죄송합니다.</b-button>
     </b-modal>
   </div>
@@ -145,6 +145,14 @@ export default {
         this.$bvModal.show('bv-modal-example')
       } else {
         alert(res.data.msg);
+      }
+    },
+    insert_chatList: async function() {
+      let res = await axios.post('/api/insert_chatList', {id: this.id, person: this.modal_idol.split('.')[0]});
+      if(res.data.ok){
+        alert(`${this.modal_idol.split('.')[0]}님이 대화상대에 추가되었습니다!`);
+      } else {
+        alert("대화상대에 추가에 실패하였습니다..");
       }
     },
     goto_chatList: async function() {
