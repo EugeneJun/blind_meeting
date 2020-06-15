@@ -4,14 +4,20 @@ const faceapi = require('../utils/faceapi');
 const fs = require('fs');
 const DB = require('../db/meeting').DB;
 
-faceapi.init();
+//faceapi.init();
 /* GET users listing. */
 router.post('/register', async function(req, res, next) {
   let exist_user = await DB.collection('users').findOne({id: req.body.id});
   if(exist_user){
     res.send({ok: 0, msg: "같은 아이디를 가진 유저가 이미 존재합니다"});
   } else {
-    await DB.collection('users').insertOne({id: req.body.id, pw: req.body.pw});
+    await DB.collection('users').insertOne({id: req.body.id, pw: req.body.pw, sex: req.body.sex});
+    req.session.user = {
+      id: req.body.id,
+      pw: req.body.pw,
+      sex: req.body.sex,
+      authorized: true
+    };
     res.send({ok: 1, msg: "회원가입 성공!"});
   }
 });
@@ -22,6 +28,7 @@ router.post('/login', async function(req, res, next) {
     req.session.user = {
       id: req.body.id,
       pw: req.body.pw,
+      sex: exist_user.sex,
       authorized: true
     };
     res.send({ok: 1, msg: "로그인 성공!"});
@@ -52,6 +59,24 @@ router.post('/insert_winner', async function(req, res) {
   DB.collection('users').updateOne({_id: exist_user._id}, {$set: {winners}});
 });
 
+router.post('/upload_img', async function(req, res) {
+  let matched_person = await faceapi.upload_img(req.body.img);
+  res.send({ok: 1, matched_person});
+});
+
+router.post('/get_chatList', async function(req, res) {
+  let data = await DB.collection('chatList').findOne({id: req.body.id});
+  res.send({ok: 1, chatList: data.chatList});
+});
+
+router.post('/insert_chatList', async function(req, res) {
+  let chatList = await DB.collection('chatList').findOne({id: req.body.id});
+  if(chatList.chatList) chatList = chatList.chatList.concat(req.body.person);
+  else chatList = [req.body.person];
+  await DB.collection('chatList').updateOne({id: req.body.id}, {$set: {chatList}}, {upsert: true});
+  res.send({ok: 1});
+});
+
 router.post('/get_similar_person', async function(req, res) {
   let exist_user = await DB.collection('similar').findOne({name: req.body.winner});
   let similar_people = exist_user.similar_people;
@@ -66,6 +91,13 @@ router.post('/get_similar_person', async function(req, res) {
 router.post('/get_winners_list', async function(req, res) {
   let exist_user = await DB.collection('users').findOne({id: req.session.user.id});
   res.send({winners_list: exist_user.winners})
+});
+
+router.post('/deleteChat', async function(req, res) {
+  let chatList = await DB.collection('chatList').findOne({id: req.session.user.id});
+  chatList.chatList.splice(chatList.chatList.indexOf(req.body.person), 1);
+  await DB.collection('chatList').updateOne({id: req.session.user.id}, {$set: {chatList:chatList.chatList}});
+  res.send({ok: 1});
 });
 
 module.exports = router;

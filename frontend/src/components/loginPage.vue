@@ -13,10 +13,10 @@
         </div>
       </div>
       <div class="buttons">
-        <div class="btn">
+        <div class="btn loginbtn">
           <button v-on:click="login()" class="btn btn-success">로그인</button>
         </div>
-        <div class="btn">
+        <div class="btn loginbtn">
           <router-link to="/register" tag='button' class="btn btn-warning">회원가입</router-link>
         </div>
       </div>
@@ -69,7 +69,7 @@ export default {
     color: #2c3e50;
     margin-top: 10%;
   }
-  .btn {
+  .loginbtn {
     margin-top: 10%;
   }
   #app {
