@@ -4,7 +4,7 @@ const faceapi = require('../utils/faceapi');
 const fs = require('fs');
 const DB = require('../db/meeting').DB;
 
-//faceapi.init();
+faceapi.init();
 /* GET users listing. */
 router.post('/register', async function(req, res, next) {
   let exist_user = await DB.collection('users').findOne({id: req.body.id});
