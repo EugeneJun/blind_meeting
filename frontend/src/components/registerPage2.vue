@@ -1,16 +1,9 @@
 <template>
-  <div class="img_recognition">
-    <b-dropdown id="dropdown" variant="primary" text="Menu">
-      <b-dropdown-item>이미지 인식 소개팅</b-dropdown-item>
-      <b-dropdown-item v-on:click="goto_mainPage_worldcup">이상형 월드컵</b-dropdown-item>
-      <b-dropdown-item v-on:click="goto_chatList">채팅방</b-dropdown-item>
-    </b-dropdown>
-    <b-button id="logout" variant="danger" v-on:click="logout">로그아웃</b-button>
-    <div style="grid-column-start: 1; grid-column-end: 3;">
-      <h1 v-on:click="goto_main">홍덕해듀오</h1>
+  <div class="registerPage2">
+    <div style="grid-column-start: 1; grid-column-end: 3; margin-top: 12%">
+      <h1 v-on:click="goto_login">홍덕해듀오</h1>
       <h4 style="margin-top:5%">사진 업로드</h4>
-      <p style="margin-top:10%">원하는 이상형 사진을 업로드 해주세요!</p>
-      <p style="margin-top:5%">AI를 통해 이상형의 얼굴과 가장 비슷한 사람을 찾아드립니다.</p>
+      <p style="margin-top:10%">자신의 사진을 업로드 해주세요!</p>
     </div>
     <div style="grid-column-start: 1; grid-column-end: 3;">
       <div class="file-upload-form">
@@ -22,22 +15,11 @@
       <div v-if="loading === true" class="loader"></div>
       <div style="margin-top:5%; grid-column-start: 1; grid-column-end: 3;" class="buttons">
         <div class="btn" style="margin-top: 2%">
-          <button v-on:click="find_idol" class="btn btn-warning">이상형 찾기</button>
+          <button v-on:click="img_upload" class="btn btn-warning">사진 업로드</button>
         </div>
       </div>
     </div>
     <!-- Modal -->
-    <b-modal id="bv-modal-example" hide-footer>
-      <template v-slot:modal-title>
-        닮은 사람 소개팅
-      </template>
-      <div class="d-block text-center">
-        <h3>{{ this.modal_idol.id }}</h3>
-        <img class="person" v-bind:src="this.modal_idol.img" />
-      </div>
-      <b-button class="mt-3" variant="success" block @click="insert_chatList(); $bvModal.hide('bv-modal-example')">받을래요!</b-button>
-      <b-button class="mt-3" block @click="$bvModal.hide('bv-modal-example')">죄송합니다.</b-button>
-    </b-modal>
   </div>
 </template>
 
@@ -45,7 +27,7 @@
 import axios from 'axios'
 
 export default {
-  name: 'image_recognition',
+  name: 'registerPage2',
   props: {
     title: String
   },
@@ -56,7 +38,7 @@ export default {
       passwordCheck: '',
       imageData: '',
       loading: false,
-      modal_idol: {id: '', img: ''},
+      modal_idol: '',
     }
   },
   created: async function () {
@@ -77,18 +59,13 @@ export default {
     }
   },
   methods: {
-    find_idol: async function () {
+    img_upload: async function () {
       if (this.imageData) {
         this.loading = true;
-        let res = await axios.post('/api/img_recognition', { img: this.imageData });
+        let res = await axios.post('/api/upload_img', { img: this.imageData });
         this.loading = false;
-        if(res.data.ok){
-          this.modal_idol = res.data.matched_person;
-          console.log(res.data.matched_person);
-          this.$bvModal.show('bv-modal-example')
-        } else{
-          alert(res.data.msg);
-        }
+        await this.$router.push('/mainPage');
+        alert(res.data.msg);
       } else {
         alert('이미지를 먼저 업로드해주세요');
       }
@@ -115,25 +92,15 @@ export default {
         reader.readAsDataURL(input.files[0]);
       }
     },
-    goto_main: async function() {
-      await this.$router.push('/mainPage');
-    },
     insert_chatList: async function() {
-      let res = await axios.post('/api/insert_chatList', {id: this.id, person: this.modal_idol.id});
+      let res = await axios.post('/api/insert_chatList', {id: this.id, person: this.modal_idol.split('.')[0]});
       if(res.data.ok){
-        alert(`${this.modal_idol.id}님이 대화상대에 추가되었습니다!`);
+        alert(`${this.modal_idol.split('.')[0]}님이 대화상대에 추가되었습니다!`);
       } else {
         alert("대화상대에 추가에 실패하였습니다..");
       }
     },
-    goto_chatList: async function() {
-      await this.$router.push('/chatList');
-    },
-    goto_mainPage_worldcup: async function() {
-      await this.$router.push('/mainPage_worldcup');
-    },
-    logout: async function() {
-      await axios.get('/api/logout');
+    goto_login: async function() {
       await this.$router.push('/login');
     }
   }
@@ -146,21 +113,16 @@ export default {
     max-width: 50%;
     max-height: 50%;
   }
-  .img_recognition {
+  .registerPage2 {
     display: grid;
     grid-template-columns: 50% 50%;
-    grid-template-rows: 10% 31% 59%;
+    grid-template-rows: 32% 50%;
     font-family: Avenir, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
     color: #2c3e50;
     height: 100vh;
-  }
-  #dropdown{
-    margin-left: -59%;
-    padding: 1px 1px;
-    display: inline-block;
   }
   .loader {
     border: 16px solid #f3f3f3; /* Light grey */
@@ -174,13 +136,5 @@ export default {
   @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
-  }
-  #logout{
-    margin-top:1%;
-    margin-left:49%;
-    max-width:50%;
-    max-height:50%;
-    padding: 1px 1px;
-    display: inline-block;
   }
 </style>

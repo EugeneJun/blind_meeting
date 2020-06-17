@@ -1,7 +1,7 @@
 <template>
   <div class="registerPage">
     <div style="grid-column-start: 1; grid-column-end: 3;">
-      <h1 v-on:click="goto_home">홍덕해듀오</h1>
+      <h1 v-on:click="goto_login">홍덕해듀오</h1>
       <h4 style="margin-top:5%">회원가입</h4>
     </div>
     <div class="IDPW" style="grid-column-start: 1; grid-column-end: 3;">
@@ -18,7 +18,7 @@
         <input type="password" v-model="passwordCheck" placeholder="비밀번호를 입력해주세요">
       </div>
       <div class="sex" style="margin-top: 5%; grid-column-start: 1; grid-column-end: 3;">
-        <b-form-group label="소개받기 원하는 성별을 골라주세요">
+        <b-form-group label="자신의 성별을 골라주세요">
           <b-form-checkbox-group
                   id="checkbox-group-1"
                   v-model="sex"
@@ -50,10 +50,10 @@
       password: '',
       passwordCheck: '',
       options: [
-        { text: '남자', value: '남자' },
-        { text: '여자', value: '여자' },
+        { text: '남자', value: 'male' },
+        { text: '여자', value: 'female' },
       ],
-      sex: '',
+      sex: [],
     }
   },
   sockets: {
@@ -67,11 +67,10 @@
   methods: {
     register: async function () {
       if (this.id && this.password === this.passwordCheck) {
-        console.log(this.selected);
         let res = await axios.post('/api/register', { id: this.id, pw: this.password, sex: this.sex })
         alert(res.data.msg);
         if(res.data.ok){
-          await this.$router.push('/login');
+          await this.$router.push('/register2');
         }
       } else if(this.password !== this.passwordCheck) {
         alert('입력한 비밀번호가 서로 다릅니다')
@@ -79,7 +78,7 @@
         alert('아이디를 입력해주세요')
       }
     },
-    goto_home: async function () {
+    goto_login: async function() {
       await this.$router.push('/login');
     }
   }
@@ -98,7 +97,7 @@
   .registerPage {
     display: grid;
     grid-template-columns: 50% 50%;
-    grid-template-rows: 15% 43% 5%;
+    grid-template-rows: 15% 50% 5%;
     margin-top:15%;
     font-family: Avenir, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;

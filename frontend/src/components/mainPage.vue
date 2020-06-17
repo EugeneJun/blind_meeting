@@ -1,10 +1,11 @@
 <template>
-  <div id="main">
-    <b-dropdown id="dropdown" text="Menu">
+  <div id="mainPage">
+    <b-dropdown id="dropdown" variant="primary" class="m-md-2" text="Menu">
       <b-dropdown-item v-on:click="goto_image_recognition">이미지 인식 소개팅</b-dropdown-item>
       <b-dropdown-item v-on:click="goto_mainPage_worldcup">이상형 월드컵</b-dropdown-item>
       <b-dropdown-item v-on:click="goto_chatList">채팅방</b-dropdown-item>
     </b-dropdown>
+    <b-button id="logout" variant="danger" v-on:click="logout">로그아웃</b-button>
     <div id="title">
       <h1>홍덕해듀오</h1>
       <div>{{ this.id }}님 환영합니다!</div>
@@ -69,6 +70,10 @@ export default {
     },
     goto_mainPage_worldcup: async function() {
       await this.$router.push('/mainPage_worldcup');
+    },
+    logout: async function() {
+      await axios.get('/api/logout');
+      await this.$router.push('/login');
     }
   }
 }
@@ -82,7 +87,7 @@ export default {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-  #main {
+  #mainPage {
     display: grid;
     grid-template-columns: 50% 50%;
     grid-template-rows: 10% 13% 5% 43% 29%;
@@ -94,12 +99,21 @@ export default {
     color: #2c3e50;
   }
   #dropdown{
-    margin-left: -40%;
+    margin-left: -59%;
     padding: 1px 1px;
+    position: relative;
     display: inline-block;
   }
   img.menu{
     margin-top: 30%;
     max-width: 100%;
+  }
+  #logout{
+    margin-top:1%;
+    margin-left:49%;
+    max-width:50%;
+    max-height:50%;
+    padding: 1px 1px;
+    display: inline-block;
   }
 </style>

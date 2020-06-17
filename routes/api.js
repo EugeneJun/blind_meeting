@@ -12,6 +12,7 @@ router.post('/register', async function(req, res, next) {
     res.send({ok: 0, msg: "같은 아이디를 가진 유저가 이미 존재합니다"});
   } else {
     await DB.collection('users').insertOne({id: req.body.id, pw: req.body.pw, sex: req.body.sex});
+    console.log(req.body.sex);
     req.session.user = {
       id: req.body.id,
       pw: req.body.pw,
@@ -37,6 +38,11 @@ router.post('/login', async function(req, res, next) {
   }
 });
 
+router.get('/logout', async function(req, res, next) {
+  req.session.destroy();
+  res.send({ok: 1});
+});
+
 router.post('/get_id', async function(req, res, next) {
   if(req.session.user){
     res.send({ok: 1, id: req.session.user.id});
@@ -60,8 +66,31 @@ router.post('/insert_winner', async function(req, res) {
 });
 
 router.post('/upload_img', async function(req, res) {
-  let matched_person = await faceapi.upload_img(req.body.img);
-  res.send({ok: 1, matched_person});
+  try{
+    if(~req.session.user.sex.indexOf('male')) {
+      await fs.writeFileSync(`./src/images/male/${req.session.user.id}`, req.body.img);
+    }
+    if(~req.session.user.sex.indexOf('female')) {
+      await fs.writeFileSync(`./src/images/female/${req.session.user.id}`, req.body.img);
+    }
+    res.send({ok: 1, msg: '이미지 업로드에 성공하였습니다!'});
+  } catch(e) {
+    res.send({ok: 0, msg: e});
+  }
+});
+
+router.post('/img_recognition', async function(req, res) {
+  let matched_person = '';
+  console.log(req.session.user.sex);
+  if(~req.session.user.sex.indexOf('male')) {
+    matched_person = await faceapi.img_recognition_female(req.body.img);
+  } else {
+    matched_person = await faceapi.img_recognition_male(req.body.img);
+  }
+  if(matched_person)
+    res.send({ok: 1, matched_person});
+  else
+    res.send({ok: 0, msg: '닮은 사람을 찾는 것을 실패했습니다 ㅜ'});
 });
 
 router.post('/get_chatList', async function(req, res) {
@@ -71,7 +100,7 @@ router.post('/get_chatList', async function(req, res) {
 
 router.post('/insert_chatList', async function(req, res) {
   let chatList = await DB.collection('chatList').findOne({id: req.body.id});
-  if(chatList.chatList) chatList = chatList.chatList.concat(req.body.person);
+  if(chatList && chatList.chatList) chatList = chatList.chatList.concat(req.body.person);
   else chatList = [req.body.person];
   await DB.collection('chatList').updateOne({id: req.body.id}, {$set: {chatList}}, {upsert: true});
   res.send({ok: 1});

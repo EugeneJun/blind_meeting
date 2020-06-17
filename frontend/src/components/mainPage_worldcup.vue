@@ -1,10 +1,11 @@
 <template>
   <div id="main">
-    <b-dropdown id="dropdown" text="Menu">
+    <b-dropdown id="dropdown" variant="primary" text="Menu">
       <b-dropdown-item v-on:click="goto_image_recognition">이미지 인식 소개팅</b-dropdown-item>
       <b-dropdown-item>이상형 월드컵</b-dropdown-item>
       <b-dropdown-item v-on:click="goto_chatList">채팅방</b-dropdown-item>
     </b-dropdown>
+    <b-button id="logout" variant="danger" v-on:click="logout">로그아웃</b-button>
     <div id="title">
       <h1 v-on:click="goto_main">오늘의 이상형 월드컵</h1>
       <div>{{ this.id }}님 환영합니다!</div>
@@ -164,6 +165,10 @@ export default {
     goto_image_recognition: async function() {
       await this.$router.push('/image_recognition');
     },
+    logout: async function() {
+      await axios.get('/api/logout');
+      await this.$router.push('/login');
+    }
   }
 }
 </script>
@@ -215,7 +220,7 @@ export default {
     color: #2c3e50;
   }
   #dropdown{
-    margin-left: -40%;
+    margin-left: -59%;
     padding: 1px 1px;
     display: inline-block;
   }
@@ -244,5 +249,13 @@ export default {
   }
   img:hover {
     background-color: grey;
+  }
+  #logout{
+    margin-top:1%;
+    margin-left:49%;
+    max-width:50%;
+    max-height:50%;
+    padding: 1px 1px;
+    display: inline-block;
   }
 </style>
