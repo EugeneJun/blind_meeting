@@ -34,8 +34,8 @@
         닮은 사람 소개팅
       </template>
       <div class="d-block text-center">
-        <h3>{{ this.modal_idol.split('.')[0] }}</h3>
-        <img class="person" v-bind:src="'./images/people/' + this.modal_idol" />
+        <h3>{{ this.modal_idol.id }}</h3>
+        <img class="person" v-bind:src="this.modal_idol.img" />
       </div>
       <b-button class="mt-3" variant="success" block @click="insert_chatList(); $bvModal.hide('bv-modal-example')">받을래요!</b-button>
       <b-button class="mt-3" block @click="$bvModal.hide('bv-modal-example')">죄송합니다.</b-button>
@@ -142,7 +142,8 @@ export default {
     get_similar_person: async function (pre_winner) {
       let res = await axios.post('/api/get_similar_person', {winner: pre_winner});
       if(res.data.ok){
-        this.modal_idol = res.data.person;
+        this.modal_idol = res.data.matched_person;
+        console.log(res.data.matched_person);
         this.$bvModal.show('bv-modal-example')
       } else {
         alert(res.data.msg);

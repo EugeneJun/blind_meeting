@@ -110,7 +110,9 @@ router.post('/get_similar_person', async function(req, res) {
   let exist_user = await DB.collection('similar').findOne({name: req.body.winner});
   let similar_people = exist_user.similar_people;
   if(similar_people && similar_people[0]) {
-    res.send({ok: 1, person: similar_people[Math.floor(Math.random() * 1000) % similar_people.length]});
+    let person = similar_people[Math.floor(Math.random() * 1000) % similar_people.length];
+    let img = await fs.readFileSync('./src/images/male/' + person, {encoding: 'utf-8'})
+    res.send({ok: 1, matched_person: {id: person, img}});
   }
   else {
     res.send({ok: 0, msg: "죄송합니다.. 닮은 사람이 존재하지 않습니다."});

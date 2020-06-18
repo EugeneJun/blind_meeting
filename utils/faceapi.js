@@ -11,7 +11,10 @@ module.exports = {
     await faceapi.nets.ssdMobilenetv1.loadFromDisk('./utils/weights');
     await faceapi.nets.faceRecognitionNet.loadFromDisk('./utils/weights');
     let idol_imgs = await fs.readdirSync('./public/images/idol/').map(e => {return {name: e, uri: './public/images/idol/' + e}});
-    let people_imgs = await fs.readdirSync('./src/images/male/').map(e => {return {name: e, uri: './src/images/male/' + e}});
+    if(idol_imgs[0].name === '.DS_Store') idol_imgs.shift();
+    let people_imgs = await fs.readdirSync('./src/images/male/');
+    if(people_imgs[0].name === '.DS_Store') people_imgs.shift();
+    people_imgs = await Promise.all(people_imgs.map(async(e) => {return {name: e, uri: await fs.readFileSync('./src/images/male/' + e, {encoding: 'utf-8'})}}));
     idol_imgs = await Promise.all(idol_imgs.map(async (e) => {return {...e, aligned_img: await canvas.loadImage(e.uri)}}));
     people_imgs = await Promise.all(people_imgs.map(async (e) => {return {...e, aligned_img: await canvas.loadImage(e.uri)}}));
     // convert blobs (buffers) to HTMLImage elements
@@ -53,10 +56,11 @@ module.exports = {
     await Promise.all(people_imgs.map(async (person, i) => {
       let dist = await faceapi.euclideanDistance(person.discriptor, wanted_img.discriptor);
       wanted_img[person.name] = dist;
-      if(dist < 0.4){
+      if(dist < 0.5){
         similar_people.push({id: person.name, img: person.uri});
       }
     }));
+    console.log(wanted_img);
     console.log("이미지 similarity 업데이트 완료", (new Date() - st) / 1000, 's');
     return similar_people[Math.floor((Math.random() * 10000)) % similar_people.length];
   },
@@ -79,10 +83,11 @@ module.exports = {
     await Promise.all(people_imgs.map(async (person, i) => {
       let dist = await faceapi.euclideanDistance(person.discriptor, wanted_img.discriptor);
       wanted_img[person.name] = dist;
-      if(dist < 0.4){
+      if(dist < 0.5){
         similar_people.push({id: person.name, img: person.uri});
       }
     }));
+    console.log(wanted_img);
     console.log("이미지 similarity 업데이트 완료", (new Date() - st) / 1000, 's');
     return similar_people[Math.floor((Math.random() * 10000)) % similar_people.length];
   },
