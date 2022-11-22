@@ -17,7 +17,7 @@
     "vue-socket.io": "^3.0.9"
   },
   "devDependencies": {
-    "@vue/cli-service": "~4.4.0",
+    "@vue/cli-service": "~5.0.8",
     "socket.io-client": "^2.3.0",
     "vue-template-compiler": "^2.6.11"
   }
